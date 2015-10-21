@@ -5,8 +5,9 @@ Requesting permissions requires additional binding to component (an activity or 
 can ask user for permissions and receives result. Then you can request permissions. Here is how you do it.
 
 # Requesting permissions
+
 ```java
-public void readContacts(View v) {
+	public void readContacts(View v) {
 		RxPermission.with(getFragmentManager()).request(permission.READ_CONTACTS)
 				.subscribe(isGranted -> showResult(v, isGranted));
 	}
@@ -16,10 +17,12 @@ public void readContacts(View v) {
 				.subscribe(isGranted -> showResult(v, isGranted));
 	}
 
-	/**
-	 * You will receive the callback for the global state: if all permission are granted
-	 * the boolean value isGranted is true, if one permission is not granted isGranted is false
-	 */
+
+	 request allows to receive a callback for the global state: if all permission are granted
+	 the boolean value isGranted is true, if one permission is not granted isGranted is false.
+	 NB: Only one result is received
+
+```java
 	public void requestAll(View v) {
 		RxPermission.with(getFragmentManager())
 				.request(permission.CAMERA,
@@ -29,9 +32,10 @@ public void readContacts(View v) {
 				.subscribe(isGranted -> showResult(v, isGranted));
 	}
 
-	/**
-	 * You will receive the callback for each permission
-	 */
+
+	requestEach allows to get the result of the request for each permission.
+	In this case you will receive 4 individual result.
+```java
 	public void requestEach(View v) {
 		RxPermission.with(getFragmentManager())
 				.requestEach(permission.CAMERA,
