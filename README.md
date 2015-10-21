@@ -4,7 +4,56 @@ An easy way to request Android M permission using rxjava
 Requesting permissions now is very easy, you can do it with one line.
 Here is how you do it.
 
-# Requesting permissions
+# Step 1: Dependencies
+To use the library you have to add the dependence in your app, do it in your `build.gradle file.
+`
+```java
+dependencies {
+	compile 'com.devdoo.rxpermissions:lib:1.0.0'
+}
+```
+
+# Step 2 Target
+In your app `build.gradle` file set at least:
+
+targetSdkVersion 23`
+
+
+# Step 3: Add the permission that you want to requet in `AndroidManifest.xml`
+
+Sample
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.devdoo.sample" >
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.READ_CALENDAR" />
+
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme" >
+        <activity
+            android:name=".MainActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>
+```
+
+# Step 4: Requesting permissions
 
 `request` to request one or more permission and receive only one return callback.
 
