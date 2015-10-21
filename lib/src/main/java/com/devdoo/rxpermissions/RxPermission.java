@@ -94,7 +94,6 @@ public class RxPermission extends Fragment {
 		}
 		if (!isAdded()) {
 			return attachedSubject.flatMap(isAttached -> createRequestEach(permissions));
-
 		} else {
 			return createRequestEach(permissions);
 		}
