@@ -6,6 +6,8 @@ Here is how you do it.
 
 # Requesting permissions
 
+`request` to request one or more permission and receive only one return callback.
+
 ```java
 	public void readContacts(View v) {
 		RxPermission.with(getFragmentManager()).request(permission.READ_CONTACTS)
@@ -17,9 +19,9 @@ Here is how you do it.
 				.subscribe(isGranted -> showResult(v, isGranted));
 	}
 ```
-	 `request` allows to receive a callback for the global state: if all permission are granted
-	 the boolean value isGranted is true, if one permission is not granted isGranted is false.
-	 NB: Only one result is received
+`request` allows to receive a callback for the global state: if all permission are granted
+the boolean value isGranted is true, if one permission is not granted isGranted is false.
+NB: Only one result is received.
 
 ```java
 	public void requestAll(View v) {
@@ -32,8 +34,8 @@ Here is how you do it.
 	}
 ```
 
-	`requestEach` allows to get the result of the request for each permission.
-	In this case you will receive 4 individual result.
+`requestEach` allows to get the result of the request for each permission.
+In this case you will receive 4 individual result.
 
 ```java
 	public void requestEach(View v) {
