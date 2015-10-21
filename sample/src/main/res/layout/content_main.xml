@@ -13,8 +13,66 @@
 	tools:showIn="@layout/activity_main"
 	tools:context=".MainActivity">
 
-	<TextView
-		android:text="Hello World!"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"/>
+	<ScrollView
+		android:orientation="vertical"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content">
+
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:orientation="vertical">
+
+			<Button
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center_horizontal"
+				android:layout_marginTop="16dp"
+				android:onClick="enableCamera"
+				android:text="Enable camera"
+				/>
+
+			<Button
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center_horizontal"
+				android:layout_marginTop="16dp"
+				android:onClick="enableLocation"
+				android:text="Enable Location"
+				/>
+			<Button
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center_horizontal"
+				android:layout_marginTop="16dp"
+				android:onClick="readContacts"
+				android:text="Enable read contacts"
+				/>
+			<Button
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center_horizontal"
+				android:layout_marginTop="16dp"
+				android:onClick="readCalendar"
+				android:text="Enable read calendar"
+				/>
+			<Button
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center_horizontal"
+				android:layout_marginTop="16dp"
+				android:onClick="requestAll"
+				android:text="Request all disabled permissions"
+			/>
+
+			<Button
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center_horizontal"
+				android:layout_marginTop="16dp"
+				android:onClick="requestEach"
+				android:text="Request each disabled permissions"
+				/>
+		</LinearLayout>
+	</ScrollView>
 </RelativeLayout>

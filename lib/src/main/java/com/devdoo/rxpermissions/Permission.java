@@ -1,39 +1,46 @@
 package com.devdoo.rxpermissions;
 
-import java.io.Serializable;
+/**
+ * Permission is the model class used to describe a permission
+ * A permission is defined as with a permission name and a permission status
+ * that can be granted or not.
+ */
+public class Permission {
+	public final String name;
+	public final boolean isGranted;
 
-public class Permission implements Serializable{
-    public final String name;
-    public final boolean granted;
+	/**
+	 * Create a new instance of the Permission
+	 *
+	 * @param name      the permission name, tha must be of the type defined in
+	 *                  {@see Manifest.Permission.*}
+	 * @param isGranted if the permission is granted or not
+	 */
+	public Permission(String name, boolean isGranted) {
+		this.name = name;
+		this.isGranted = isGranted;
+	}
 
-    public Permission(String name, boolean granted) {
-        this.name = name;
-        this.granted = granted;
-    }
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Permission that = (Permission) o;
+		return isGranted == that.isGranted && name.equals(that.name);
+	}
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+	@Override
+	public int hashCode() {
+		int result = name.hashCode();
+		result = 31 * result + (isGranted ? 1 : 0);
+		return result;
+	}
 
-        Permission that = (Permission) o;
-
-        if (granted != that.granted) return false;
-        return name.equals(that.name);
-    }
-
-    @Override
-    public int hashCode() {
-        int result = name.hashCode();
-        result = 31 * result + (granted ? 1 : 0);
-        return result;
-    }
-
-    @Override
-    public String toString() {
-        return "Permission{" +
-                "name='" + name + '\'' +
-                ", granted=" + granted +
-                '}';
-    }
+	@Override
+	public String toString() {
+		return "Permission{" +
+				"name='" + name + '\'' +
+				", granted=" + isGranted +
+				'}';
+	}
 }

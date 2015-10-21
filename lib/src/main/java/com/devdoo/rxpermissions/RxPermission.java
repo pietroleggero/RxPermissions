@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,9 +17,11 @@ import java.util.List;
 import java.util.Map;
 
 import rx.Observable;
-import rx.functions.Func1;
 import rx.subjects.PublishSubject;
 
+/**
+ * RxPermission fragment is used to request a set of runtime permissions
+ */
 @TargetApi(VERSION_CODES.HONEYCOMB)
 public class RxPermission extends Fragment {
 	private PublishSubject<Boolean> attachedSubject;
@@ -29,16 +32,23 @@ public class RxPermission extends Fragment {
 	// Once granted or denied, they are removed from it.
 	private Map<String, PublishSubject<Permission>> mSubjects = new HashMap<>();
 
+	/**
+	 * Create an instance of the shadow fragment
+	 *
+	 * @param fragmentManager the {@linkplain FragmentManager}, child fragment manager
+	 *                        cannot be used because the instance cannot be retained
+	 * @return an instance of the fragment
+	 */
 	public static RxPermission with(FragmentManager fragmentManager) {
 
-		RxPermission rxPermission2 = (RxPermission) fragmentManager.findFragmentByTag(TAG);
-		if (rxPermission2 == null) {
-			rxPermission2 = new RxPermission();
+		RxPermission rxPermission = (RxPermission) fragmentManager.findFragmentByTag(TAG);
+		if (rxPermission == null) {
+			rxPermission = new RxPermission();
 			fragmentManager.beginTransaction()
-					.add(rxPermission2, TAG)
+					.add(rxPermission, TAG)
 					.commit();
 		}
-		return rxPermission2;
+		return rxPermission;
 	}
 
 	public RxPermission() {
@@ -55,12 +65,14 @@ public class RxPermission extends Fragment {
 	public void onAttach(Context context) {
 		super.onAttach(context);
 		attachedSubject.onNext(true);
+		attachedSubject.onCompleted();
 	}
 
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
 		attachedSubject.onNext(true);
+		attachedSubject.onCompleted();
 	}
 
 	@TargetApi(VERSION_CODES.M)
@@ -68,22 +80,6 @@ public class RxPermission extends Fragment {
 		requestPermissions(permissions, REQUEST_PERMISSIONS_CODE);
 	}
 
-	@Override
-	public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-		for (int i = 0, size = permissions.length; i < size; i++) {
-			// Find the corresponding subject
-			PublishSubject<Permission> subject = mSubjects.get(permissions[i]);
-			if (subject == null) {
-				// No subject found
-				throw new IllegalStateException("RxPermissions.onRequestPermissionsResult invoked but didn't find the corresponding permission request.");
-			}
-			mSubjects.remove(permissions[i]);
-			boolean granted = grantResults[i] == PackageManager.PERMISSION_GRANTED;
-			subject.onNext(new Permission(permissions[i], granted));
-			subject.onCompleted();
-		}
-		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-	}
 
 	/*
 	* Register one or several permission requests and returns an observable that
@@ -100,31 +96,16 @@ public class RxPermission extends Fragment {
 			throw new IllegalArgumentException("RxPermissions.request requires at least one input permission");
 		}
 		if (!isAdded()) {
-			return attachedSubject.flatMap(new Func1<Boolean, Observable<Permission>>() {
-				@Override
-				public Observable<Permission> call(Boolean aBoolean) {
-					return createRequestEach(permissions);
-				}
-			}).first();
+			return attachedSubject.flatMap(isAttached -> createRequestEach(permissions));
 
 		} else {
 			return createRequestEach(permissions);
 		}
 	}
 
-	private Observable<Permission> createRequestEach(String[] permissions) {
-		if (hasPermissions(permissions)) {
-			// Already granted, or not Android M
-			// Map all requested permissions to granted Permission objects.
-			return Observable.from(permissions)
-					.map(new Func1<String, Permission>() {
-						@Override
-						public Permission call(String s) {
-							return new Permission(s, true);
-						}
-					});
-		}
-		return createPermissionRequest(permissions);
+	private Observable<Permission> createRequestEach(String[] permissionArray) {
+		Permissions permissions = toPermission(permissionArray);
+		return createPermissionRequest(permissions.getDenied()).mergeWith(Observable.from(permissions.getGranted()));
 	}
 
 	/**
@@ -138,97 +119,78 @@ public class RxPermission extends Fragment {
 	 * It handles multiple requests to the same permission, in that case the
 	 * same observable will be returned.
 	 */
-	public Observable<Boolean> request(final String... permissions) {
-		if (permissions == null || permissions.length == 0) {
+	public Observable<Boolean> request(final String... permission) {
+		if (permission == null || permission.length == 0) {
 			throw new IllegalArgumentException("RxPermissions request requires at least one input permission");
 		}
 		if (!isAdded()) {
-			return attachedSubject.flatMap(new Func1<Boolean, Observable<Boolean>>() {
-				@Override
-				public Observable<Boolean> call(Boolean aBoolean) {
-					return createRequest(permissions);
-				}
-			}).first();
+			return attachedSubject.flatMap(isAttached -> createRequest(permission));
 		} else {
-			return createRequest(permissions);
+			return createRequest(permission);
 		}
 	}
 
-	private Observable<Boolean> createRequest(String[] permissions) {
-		if (hasPermissions(permissions)) {
-			// Already granted, or not Android M
-			return Observable.just(true);
-		}
-		return createPermissionRequest(permissions)
+	private Observable<Boolean> createRequest(final String... permissionArray) {
+		Permissions permissions = toPermission(permissionArray);
+		return createPermissionRequest(permissions.getDenied()).mergeWith(Observable.from(permissions.getGranted()))
 				.toList()
-				.map(new Func1<List<Permission>, Boolean>() {
-					@Override
-					public Boolean call(List<Permission> permissions) {
-						for (Permission p : permissions) {
-							if (!p.granted) {
-								return false;
-							}
+				.map(permissionList -> {
+					for (Permission p : permissionList) {
+						if (!p.isGranted) {
+							return false;
 						}
-						return true;
 					}
+					return true;
 				});
 	}
 
 	@TargetApi(Build.VERSION_CODES.M)
-	private Observable<Permission> createPermissionRequest(final String... permissions) {
+	private Observable<Permission> createPermissionRequest(final List<Permission> permissions) {
 
-		final List<Observable<Permission>> list = new ArrayList<>(permissions.length);
+		final List<Observable<Permission>> list = new ArrayList<>(permissions.size());
 		List<String> unrequestedPermissions = new ArrayList<>();
-
-		// In case of multiple permissions, we create a observable for each of them.
-		// This helps to handle concurrent requests, for instance when there is one
-		// request for CAMERA and STORAGE, and another request for CAMERA only, only
-		// one observable will be create for the CAMERA.
-		// At the end, the observables are combined to have a unique response.
-		for (String permission : permissions) {
-			PublishSubject<Permission> subject = mSubjects.get(permission);
+		for (Permission permission : permissions) {
+			PublishSubject<Permission> subject = mSubjects.get(permission.name);
 			if (subject == null) {
 				subject = PublishSubject.create();
-				mSubjects.put(permission, subject);
-				unrequestedPermissions.add(permission);
+				mSubjects.put(permission.name, subject);
+				unrequestedPermissions.add(permission.name);
 			}
 			list.add(subject);
 		}
 		if (!unrequestedPermissions.isEmpty()) {
-			requestPermission(permissions);
+			requestPermission(unrequestedPermissions.toArray(new String[1]));
 		}
 		if (isAdded()) {
 			return Observable.concat(Observable.from(list));
 		} else {
-			return attachedSubject.flatMap(new Func1<Boolean, Observable<Permission>>() {
-				@Override
-				public Observable<Permission> call(Boolean aBoolean) {
-					return Observable.concat(Observable.from(list));
-				}
-			});
+			return attachedSubject.flatMap(isAttached -> Observable.concat(Observable.from(list)));
 		}
 	}
 
-	/**
-	 * Returns true if the permissions is already granted.
-	 * <p>
-	 * Always true if SDK &lt; 23.
-	 */
-	private boolean hasPermissions(String... permissions) {
-		return !isMarshmallow() || hasRuntimePermissions(permissions);
-	}
-
-	private boolean isMarshmallow() {
-		return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
-	}
-
-	@TargetApi(Build.VERSION_CODES.M)
-	private boolean hasRuntimePermissions(String... permissions) {
-		for (String permission : permissions) {
-			if (getContext().checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
-				return false;
+	@Override
+	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+		for (int i = 0, size = permissions.length; i < size; i++) {
+			PublishSubject<Permission> subject = mSubjects.get(permissions[i]);
+			if (subject == null) {
+				//This can happen if the activity is destroyed and the fragment is not more retained
+				//in this case no callback is sent back
+				//TODO: How to solve?
+				return;
 			}
+			mSubjects.remove(permissions[i]);
+			boolean granted = grantResults[i] == PackageManager.PERMISSION_GRANTED;
+			subject.onNext(new Permission(permissions[i], granted));
+			subject.onCompleted();
 		}
-		return true;
+		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 	}
+
+	private Permissions toPermission(String[] permissionArray) {
+		if (PermissionUtils.isMarshmallow()) {
+			return PermissionUtils.toPermissions(getContext(), permissionArray);
+		}
+		return PermissionUtils.toPermissions(permissionArray);
+	}
+
 }
