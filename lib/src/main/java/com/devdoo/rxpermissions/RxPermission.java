@@ -24,11 +24,10 @@ import rx.subjects.PublishSubject;
  */
 @TargetApi(VERSION_CODES.HONEYCOMB)
 public class RxPermission extends Fragment {
+	public static final String NO_PERMISSONS_EXCEPTION = "RxPermissions request requires at least one input permission";
 	private static final String TAG = RxPermission.class.getSimpleName();
 	private static final int REQUEST_PERMISSIONS_CODE = 10;
 	private PublishSubject<Boolean> attachedSubject;
-	// Contains all the current permission requests.
-	// Once granted or denied, they are removed from it.
 	private Map<String, PublishSubject<Permission>> mSubjects = new HashMap<>();
 
 	public RxPermission() {
@@ -91,7 +90,7 @@ public class RxPermission extends Fragment {
 	*/
 	public Observable<Permission> requestEach(final String... permissions) {
 		if (permissions == null || permissions.length == 0) {
-			throw new IllegalArgumentException("RxPermissions.request requires at least one input permission");
+			throw new IllegalArgumentException(NO_PERMISSONS_EXCEPTION);
 		}
 		if (!isAdded()) {
 			return attachedSubject.flatMap(isAttached -> createRequestEach(permissions));
@@ -103,7 +102,8 @@ public class RxPermission extends Fragment {
 
 	private Observable<Permission> createRequestEach(String[] permissionArray) {
 		Permissions permissions = toPermission(permissionArray);
-		return createPermissionRequest(permissions.getDenied()).mergeWith(Observable.from(permissions.getGranted()));
+		return createPermissionRequest(permissions.getDenied())
+				.mergeWith(Observable.from(permissions.getGranted()));
 	}
 
 	/**
@@ -119,7 +119,7 @@ public class RxPermission extends Fragment {
 	 */
 	public Observable<Boolean> request(final String... permission) {
 		if (permission == null || permission.length == 0) {
-			throw new IllegalArgumentException("RxPermissions request requires at least one input permission");
+			throw new IllegalArgumentException(NO_PERMISSONS_EXCEPTION);
 		}
 		if (!isAdded()) {
 			return attachedSubject.flatMap(isAttached -> createRequest(permission));
@@ -130,7 +130,8 @@ public class RxPermission extends Fragment {
 
 	private Observable<Boolean> createRequest(final String... permissionArray) {
 		Permissions permissions = toPermission(permissionArray);
-		return createPermissionRequest(permissions.getDenied()).mergeWith(Observable.from(permissions.getGranted()))
+		return createPermissionRequest(permissions.getDenied())
+				.mergeWith(Observable.from(permissions.getGranted()))
 				.toList()
 				.map(permissionList -> {
 					for (Permission p : permissionList) {
@@ -144,7 +145,6 @@ public class RxPermission extends Fragment {
 
 	@TargetApi(Build.VERSION_CODES.M)
 	private Observable<Permission> createPermissionRequest(final List<Permission> permissions) {
-
 		final List<Observable<Permission>> list = new ArrayList<>(permissions.size());
 		List<String> unrequestedPermissions = new ArrayList<>();
 		for (Permission permission : permissions) {

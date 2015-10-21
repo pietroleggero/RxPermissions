@@ -52,12 +52,10 @@ public class MainActivity extends AppCompatActivity {
 		return super.onOptionsItemSelected(item);
 	}
 
-
 	public void enableCamera(View v) {
 		RxPermission.with(getFragmentManager()).request(permission.CAMERA)
 				.subscribe(isGranted -> showResult(v, isGranted));
 	}
-
 
 	public void enableLocation(View v) {
 		RxPermission.with(getFragmentManager()).request(permission.ACCESS_FINE_LOCATION)
@@ -74,13 +72,16 @@ public class MainActivity extends AppCompatActivity {
 				.subscribe(isGranted -> showResult(v, isGranted));
 	}
 
-
 	/**
 	 * You will receive the callback for the global state: if all permission are granted
 	 * the isGranted boolean is true, if one permission is not granted the callback is false
 	 */
 	public void requestAll(View v) {
-		RxPermission.with(getFragmentManager()).request(permission.CAMERA, permission.ACCESS_FINE_LOCATION, permission.READ_CONTACTS, permission.READ_CALENDAR)
+		RxPermission.with(getFragmentManager())
+				.request(permission.CAMERA,
+						permission.ACCESS_FINE_LOCATION,
+						permission.READ_CONTACTS,
+						permission.READ_CALENDAR)
 				.subscribe(isGranted -> showResult(v, isGranted));
 	}
 
@@ -88,15 +89,18 @@ public class MainActivity extends AppCompatActivity {
 	 * You will receive the callback for each permission
 	 */
 	public void requestEach(View v) {
-		RxPermission.with(getFragmentManager()).requestEach(permission.CAMERA, permission.ACCESS_FINE_LOCATION, permission.READ_CONTACTS, permission.READ_CALENDAR)
+		RxPermission.with(getFragmentManager())
+				.requestEach(permission.CAMERA,
+						permission.ACCESS_FINE_LOCATION,
+						permission.READ_CONTACTS,
+						permission.READ_CALENDAR)
 				.subscribe(p -> {
-							Toast.makeText(MainActivity.this,p.name+" " +p.isGranted,Toast.LENGTH_SHORT).show();
+							Toast.makeText(MainActivity.this, p.name + " " + p.isGranted, Toast.LENGTH_SHORT).show();
 						}
 				);
 	}
 
 	private void showResult(View v, Boolean granted) {
-		Snackbar.make(v,"Permission granted: "+ granted, Snackbar.LENGTH_SHORT).show();
+		Snackbar.make(v, "Permission granted: " + granted, Snackbar.LENGTH_SHORT).show();
 	}
-
 }
