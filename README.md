@@ -7,7 +7,7 @@ Here is how you do it.
 # Step 1: Dependencies
 To use the library you have to add the dependence in your app, do it in your `build.gradle file.
 `
-```java
+```groovy
 dependencies {
 	compile 'com.devdoo.rxpermissions:lib:1.0.0'
 }
@@ -16,12 +16,13 @@ dependencies {
 # Step 2 Target
 In your app `build.gradle` file set at least:
 
+```groovy
 targetSdkVersion 23`
+```
 
-
-# Step 3: Add the permission that you want to requet in `AndroidManifest.xml`
-
-Sample
+# Step 3: Add the permission `
+Add the permission you want to request in `AndroidManifest.xml`
+Like in this example:
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
