@@ -16,12 +16,10 @@ can ask user for permissions and receives result. Then you can request permissio
 		RxPermission.with(getFragmentManager()).request(permission.READ_CALENDAR)
 				.subscribe(isGranted -> showResult(v, isGranted));
 	}
-
-
+```
 	 request allows to receive a callback for the global state: if all permission are granted
 	 the boolean value isGranted is true, if one permission is not granted isGranted is false.
 	 NB: Only one result is received
-
 ```java
 	public void requestAll(View v) {
 		RxPermission.with(getFragmentManager())
@@ -31,8 +29,7 @@ can ask user for permissions and receives result. Then you can request permissio
 						permission.READ_CALENDAR)
 				.subscribe(isGranted -> showResult(v, isGranted));
 	}
-
-
+```
 	requestEach allows to get the result of the request for each permission.
 	In this case you will receive 4 individual result.
 ```java
