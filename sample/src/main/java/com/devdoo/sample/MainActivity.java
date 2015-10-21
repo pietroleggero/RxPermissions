@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.devdoo.rxpermissions.Permission;
 import com.devdoo.rxpermissions.RxPermission;
 
 public class MainActivity extends AppCompatActivity {
@@ -74,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
 
 	/**
 	 * You will receive the callback for the global state: if all permission are granted
-	 * the isGranted boolean is true, if one permission is not granted the callback is false
+	 * the boolean value isGranted is true, if one permission is not granted isGranted is false
 	 */
 	public void requestAll(View v) {
 		RxPermission.with(getFragmentManager())
@@ -94,13 +95,14 @@ public class MainActivity extends AppCompatActivity {
 						permission.ACCESS_FINE_LOCATION,
 						permission.READ_CONTACTS,
 						permission.READ_CALENDAR)
-				.subscribe(p -> {
-							Toast.makeText(MainActivity.this, p.name + " " + p.isGranted, Toast.LENGTH_SHORT).show();
-						}
-				);
+				.subscribe(this::showResult);
 	}
 
 	private void showResult(View v, Boolean granted) {
 		Snackbar.make(v, "Permission granted: " + granted, Snackbar.LENGTH_SHORT).show();
+	}
+
+	private void showResult(Permission p) {
+		Toast.makeText(MainActivity.this, p.name + " " + p.isGranted, Toast.LENGTH_SHORT).show();
 	}
 }

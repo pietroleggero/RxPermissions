@@ -12,8 +12,8 @@ public class Permission {
 	/**
 	 * Create a new instance of the Permission
 	 *
-	 * @param name      the permission name, tha must be of the type defined in
-	 *                  {@see Manifest.Permission.*}
+	 * @param name      the permission name, tha must be of the type defined
+	 *                  in {@linkplain android.Manifest.permission}
 	 * @param isGranted if the permission is granted or not
 	 */
 	public Permission(String name, boolean isGranted) {

@@ -13,7 +13,7 @@ import android.os.Build.VERSION_CODES;
 public class PermissionUtils {
 
 	/**
-	 * @return true if android version is > of M
+	 * @return true if android version is major of M
 	 */
 	public static boolean isMarshmallow() {
 		return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
