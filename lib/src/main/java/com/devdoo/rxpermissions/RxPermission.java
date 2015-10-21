@@ -24,13 +24,16 @@ import rx.subjects.PublishSubject;
  */
 @TargetApi(VERSION_CODES.HONEYCOMB)
 public class RxPermission extends Fragment {
-	private PublishSubject<Boolean> attachedSubject;
 	private static final String TAG = RxPermission.class.getSimpleName();
 	private static final int REQUEST_PERMISSIONS_CODE = 10;
-
+	private PublishSubject<Boolean> attachedSubject;
 	// Contains all the current permission requests.
 	// Once granted or denied, they are removed from it.
 	private Map<String, PublishSubject<Permission>> mSubjects = new HashMap<>();
+
+	public RxPermission() {
+		attachedSubject = PublishSubject.create();
+	}
 
 	/**
 	 * Create an instance of the shadow fragment
@@ -49,10 +52,6 @@ public class RxPermission extends Fragment {
 					.commit();
 		}
 		return rxPermission;
-	}
-
-	public RxPermission() {
-		attachedSubject = PublishSubject.create();
 	}
 
 	@Override
@@ -79,7 +78,6 @@ public class RxPermission extends Fragment {
 	public void requestPermission(String... permissions) {
 		requestPermissions(permissions, REQUEST_PERMISSIONS_CODE);
 	}
-
 
 	/*
 	* Register one or several permission requests and returns an observable that
@@ -192,5 +190,4 @@ public class RxPermission extends Fragment {
 		}
 		return PermissionUtils.toPermissions(permissionArray);
 	}
-
 }
