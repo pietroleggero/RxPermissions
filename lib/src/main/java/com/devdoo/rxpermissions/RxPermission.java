@@ -37,7 +37,7 @@ public class RxPermission extends Fragment {
 	/**
 	 * Create an instance of the shadow fragment
 	 *
-	 * @param fragmentManager the {@linkplain FragmentManager}, child fragment manager
+	 * @param fragmentManager the FragmentManager, child fragment manager
 	 *                        cannot be used because the instance cannot be retained
 	 * @return an instance of the fragment
 	 */
