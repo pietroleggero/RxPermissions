@@ -10,7 +10,7 @@ To use the library you have to add the dependence in your app, do it in your `bu
 `
 ```groovy
 dependencies {
-	compile 'com.devdoo.rxpermissions:lib:1.0.0'
+	compile 'com.devdoo.rxpermissions:lib:1.0.1'
 }
 ```
 
