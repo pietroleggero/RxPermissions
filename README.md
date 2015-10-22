@@ -1,6 +1,6 @@
 # RxPermissions
 ![device-2015-10-22-005828](https://cloud.githubusercontent.com/assets/1311551/10652589/30502624-7858-11e5-8139-771378cea7e3.png)
-An easy way to request Android M permission using rxjava
+An easy way to request Android M permission using RxJava
 
 Requesting permissions now is very easy, you can do it with one line.
 Here is how you do it.
