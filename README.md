@@ -14,14 +14,7 @@ dependencies {
 }
 ```
 
-# Step 2 Target
-In your app `build.gradle` file set at least:
-
-```groovy
-targetSdkVersion 23
-```
-
-# Step 3: Add the permission
+# Step 2: Add the permission
 Add the permission you want to request in `AndroidManifest.xml`
 Like in this example:
 ```xml
