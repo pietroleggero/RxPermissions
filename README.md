@@ -10,10 +10,9 @@ To use the library you have to add the dependence in your app, do it in your `bu
 `
 ```groovy
 dependencies {
-	compile 'com.devdoo.rxpermissions:lib:1.0.1'
+	compile 'com.devdoo.rxpermissions:lib:1.0.2'
 }
 ```
-
 # Step 2: Add the permission
 Add the permission you want to request in `AndroidManifest.xml`
 Like in this example:
@@ -47,7 +46,6 @@ Like in this example:
 
 </manifest>
 ```
-
 # Step 4: Requesting permissions
 
 `request` to request one or more permission and receive only one return callback.
