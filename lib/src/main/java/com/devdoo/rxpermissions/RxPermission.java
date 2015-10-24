@@ -2,14 +2,15 @@ package com.devdoo.rxpermissions;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
+
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,7 +29,7 @@ public class RxPermission extends Fragment {
 	private static final String TAG = RxPermission.class.getSimpleName();
 	private static final int REQUEST_PERMISSIONS_CODE = 10;
 	private PublishSubject<Boolean> attachedSubject;
-	private Map<String, PublishSubject<Permission>> mSubjects = new HashMap<>();
+	private static Map<String, PublishSubject<Permission>> mSubjects;
 
 	public RxPermission() {
 		attachedSubject = PublishSubject.create();
@@ -49,6 +50,7 @@ public class RxPermission extends Fragment {
 			fragmentManager.beginTransaction()
 					.add(rxPermission, TAG)
 					.commit();
+			mSubjects = new HashMap<>();
 		}
 		return rxPermission;
 	}

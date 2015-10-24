@@ -99,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
 	}
 
 	private void showResult(View v, Boolean granted) {
-		Snackbar.make(v, "Permission granted: " + granted, Snackbar.LENGTH_SHORT).show();
+		Toast.makeText(MainActivity.this, "Permission granted: " + granted, Toast.LENGTH_SHORT).show();
 	}
 
 	private void showResult(Permission p) {
